@@ -35,6 +35,11 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Open", style: .plain, target: self, action: #selector(openTapped))
+        navigationItem.setLeftBarButtonItems([
+        UIBarButtonItem(barButtonSystemItem: .rewind, target: self, action: #selector(backTapped)),
+        UIBarButtonItem(barButtonSystemItem: .fastForward, target: self, action: #selector(forwardTapped))], animated: true)
+                                                
+        
         progressView = UIProgressView(progressViewStyle: .default)
         progressView.sizeToFit()
         let progressButton = UIBarButtonItem(customView: progressView)
@@ -45,6 +50,18 @@ class ViewController: UIViewController, WKNavigationDelegate {
         toolbarItems = [progressButton, spacer, refresh]
         navigationController?.isToolbarHidden = false
         
+    }
+    
+    @objc func forwardTapped() {
+        if webView.canGoForward {
+            webView.goForward()
+        }
+    }
+    
+    @objc func backTapped() {
+        if webView.canGoBack {
+            webView.goBack()
+        }
     }
     
     @objc func openTapped() {
@@ -72,6 +89,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
+    fileprivate func showAlertBlockWebsites() {
+        let alertController = UIAlertController(title: nil, message: "This website is not allow!!", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(alertController, animated: true)
+    }
+    
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let url = navigationAction.request.url
         
@@ -85,5 +108,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         }
         decisionHandler(.cancel)
     }
+    
+
 }
 
